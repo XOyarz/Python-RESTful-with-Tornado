@@ -84,7 +84,7 @@ class LedHandler(web.RequestHandler):
             print("I've finished setting the {0}'s brightness level".format(led.description))
             response = {
                 'id': led.identifier,
-                'description': led.description
+                'description': led.description,
                 'brightness_level': brightness_level
             }
             self.set_status(status.HTTP_200_OK)
