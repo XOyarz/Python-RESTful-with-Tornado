@@ -31,3 +31,27 @@ class TestHexacopter(AsyncHTTPTestCase):
         self.assertTrue('brightness_level' in get_response_led_2_data.keys())
         self.assertEqual(get_response_led_1_data['brightness_level'], patch_args_led_1['brightness_level'])
         self.assertEqual(get_response_led_2_data['brightness_level'], patch_args_led_2['brightness_level'])
+
+    def test_set_and_get_hexacopter_motor_speed(self):
+        """
+        Ensure we can set and get the hexacopter's motor speed
+        """
+        patch_args = {'motor_speed': 700}
+        patch_response = self.fetch('/hexacopters/1', method='PATCH', body=json.dumps(patch_args))
+        self.assertEqual(patch_response.code, status.HTTP_200_OK)
+        get_response = self.fetch('/hexacopters/1', method='GET')
+        self.assertEqual(get_response.code, status.HTTP_200_OK)
+        get_response_data = escape.json_decode(get_response.body)
+        self.assertTrue('speed' in get_response_data.keys())
+        self.assertTrue('turned_on' in get_response_data.keys())
+        self.assertEqual(get_response_data['speed'], patch_args['motor_speed'])
+        self.assertEqual(get_response_data['turned_on'], True)
+
+    def test_get_altimeter_altitude(self):
+        """Ensure we can get the altimeter's altitude"""
+        get_response = self.fetch('/altimeters/1', method='GET')
+        self.assertEqual(get_response.code, status.HTTP_200_OK)
+        get_response_data = escape.json_decode(get_response.body)
+        self.assertTrue('altitude' in get_response_data.keys())
+        self.assertGreaterEqual(get_response_data['altitude'], 0)
+        self.assertLessEqual(get_response_data['altitude'], 3000)
