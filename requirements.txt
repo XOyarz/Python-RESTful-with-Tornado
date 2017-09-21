@@ -1,0 +1,12 @@
+certifi==2017.7.27.1
+chardet==3.0.4
+cov-core==1.15.0
+coverage==4.4.1
+httpie==0.9.9
+idna==2.6
+nose2==0.6.5
+Pygments==2.2.0
+requests==2.18.4
+six==1.11.0
+tornado==4.5.2
+urllib3==1.22

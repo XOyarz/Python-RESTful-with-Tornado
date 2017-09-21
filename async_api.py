@@ -151,14 +151,19 @@ class AsyncAltimeterHandler(web.RequestHandler):
     def retrieve_altitude(self):
         return drone.altimeter.get_altitude()
 
-application = web.Application([
+class Application(web.Application):
+    def __init__(self, **kwargs):
+        handlers = [
         (r"/hexacopters/([0-9]+)", AsyncHexacotperHandler),
         (r"/leds/([0-9]+)", AsyncLedHandler),
         (r"/altimeters/([0-9]+)", AsyncAltimeterHandler),
-    ], debug=True)
+    ]
+        super(Application, self).__init__(handlers, **kwargs)
 
-if __name__=="__main__":
-    port = 8888
-    print("ASYNC Listening at port {0}".format(port))
-    application.listen(port)
-    ioloop.IOLoop.instance().start()
+
+if __name__== "__main__":
+    application = Application()
+    application.listen(8888)
+    tornado_ioloop = ioloop.IOLoop.instance()
+    ioloop.PeriodicCallback(lambda:None, 500, tornado_ioloop).start()
+    tornado_ioloop.start()
