@@ -55,3 +55,67 @@ class TestHexacopter(AsyncHTTPTestCase):
         self.assertTrue('altitude' in get_response_data.keys())
         self.assertGreaterEqual(get_response_data['altitude'], 0)
         self.assertLessEqual(get_response_data['altitude'], 3000)
+
+    def test_set_invalid_brightness_level(self):
+        """
+        Ensure we cannot set an invalid brightness level for a LED
+        """
+        patch_args_led_1 = {'brightness_level': 256}
+        patch_response_led_1 = self.fetch('/leds/1', method='PATCH', body=json.dumps(patch_args_led_1))
+        self.assertEqual(patch_response_led_1.code, status.HTTP_400_BAD_REQUEST)
+        patch_args_led_2 = {'brightness_level': -256}
+        patch_response_led_2 = self.fetch('/leds/2', method='PATCH', body=json.dumps(patch_args_led_2))
+        self.assertEqual(patch_response_led_2.code, status.HTTP_400_BAD_REQUEST)
+        patch_response_led_3 = self.fetch('/leds/2', method='PATCH', body=json.dumps({}))
+        self.assertEqual(patch_response_led_3.code, status.HTTP_400_BAD_REQUEST)
+
+    def test_set_brightness_level_invalid_led_id(self):
+        """
+        Ensure we cannot set the brightness level for an invalid LED id
+        """
+        patch_args_led_1 = {'brightness_level': 128}
+        patch_response_led_1 = self.fetch('/leds/100', method='PATCH', body=json.dumps(patch_args_led_1))
+        self.assertEqual(patch_response_led_1.code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_brightness_level_invalid_led_id(self):
+        """
+        Ensure we cannot get the brightness level for an invalid LED id
+        """
+        patch_response_led_1 = self.fetch('/leds/100', method='GET')
+        self.assertEqual(patch_response_led_1.code, status.HTTP_404_NOT_FOUND)
+
+    def test_set_invalid_motor_speed(self):
+        """
+        Ensure we cannot set an invalid motor speed for the hexacopter
+        """
+        patch_args_hexacopter_1 = {'motor_speed': 89000}
+        patch_response_hexacopter_1 = self.fetch('/hexacopters/1', method='PATCH', body=json.dumps(patch_args_hexacopter_1))
+        self.assertEqual(patch_response_hexacopter_1.code, status.HTTP_400_BAD_REQUEST)
+        patch_args_hexacopter_2 = {'motor_speed': -78600}
+        patch_response_hexacopter_2 = self.fetch('/hexacopters/1', method='PATCH', body=json.dumps(patch_args_hexacopter_2))
+        self.assertEqual(patch_response_hexacopter_2.code, status.HTTP_400_BAD_REQUEST)
+        patch_response_hexacopter_3 = self.fetch('/hexacopters/1', method='PATCH', body=json.dumps({}))
+        self.assertEqual(patch_response_hexacopter_3.code, status.HTTP_400_BAD_REQUEST)
+
+    def test_set_motor_speed_invalid_hexacopter_id(self):
+        """
+        Ensure we cannot set the motor speed for an invalid hexacopter id
+        """
+        patch_args_hexacopter_1 = {'motor_speed': 128}
+        patch_response_hexacopter_1 = self.fetch('/hexacopters/100', method='PATCH', body=json.dumps(patch_args_hexacopter_1))
+        self.assertEqual(patch_response_hexacopter_1.code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_motor_speed_invalid_hexacopter_id(self):
+        """
+        Ensure we cannot get the motor speed for an invalid hexacopter id
+        """
+        patch_response_hexacopter_1 = self.fetch('/hexacopters/5', method='GET')
+        self.assertEqual(patch_response_hexacopter_1.code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_altimeter_altitude_invalid_altimeter_id(self):
+        """
+        Ensure we cannot get the altimeter's altitude for an invalid
+        altimeter id
+        """
+        get_response = self.fetch('/altimeters/5', method='GET')
+        self.assertEqual(get_response.code, status.HTTP_404_NOT_FOUND)
